@@ -39,7 +39,7 @@ cd ..
 Now, the Kubernetes cluster and Knative should be ready.
 It is time to deploy this fork of airflow with the following commands:
 ```bash
-git clone --single-branch --branch integrate-knative --depth 1 git@github.com:eth-easl/airflow.git
+git clone --depth 1 git@github.com:eth-easl/airflow.git
 cd airflow
 ./scripts/setup_airflow.sh
 ```
@@ -183,4 +183,21 @@ requests to it.
 With the pod id, run
 ```bash
 kubectl -n airflow logs <pod_id>
+```
+
+## Running benchmarks
+Run `./scripts/run_benchmarks` to run the benchmark workflows.
+It will delete the kubernetes namespace `airflow`, so make sure there is nothing important
+in it.
+The script will run the benchmark workflows against the modified version of Airflow with Knative
+and against an unmodified, stock version of Airflow.
+
+Existing benchmark data is in `benchmark_data.tar.gz`.
+Unpack it to `benchmark_data` to use the provided plotting and analysis scripts.
+E.g.
+```bash
+tar -xvzf benchmark_data.tar.gz
+python3 scripts/analyze_per_task_latency.py benchmark_data/benchmarking_logs_1676206749/log_scheduler_benchmark_w8_d3.txt
+python3 scripts/plot_e2e_latency.py
+python3 scripts/plot_throughput_width.py
 ```
